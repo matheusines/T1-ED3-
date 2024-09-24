@@ -2,6 +2,9 @@
 #include <stdlib.h>        // Inclui a biblioteca padrão para uso de funções como malloc(), free(), etc.
 #include "funcionalidades.h" // Inclui o arquivo de cabeçalho "funcionalidades.h" onde as funções `funcionalidade1()`, `funcionalidade2()`, etc., estão declaradas.
 
+// As funcionalidades 1, 3, 5 foram feitas pelo Bruno Tomé Rosa 
+// As funcionalidades 2, 4, 6 foram feitas pelo Matheus Ines 
+
 int main() {
     int opt;              // Declara a variável 'opt' para armazenar a opção do usuário.
     scanf("%d", &opt);    // Lê a entrada do usuário e armazena o valor na variável 'opt'.
@@ -25,7 +28,7 @@ int main() {
             break;                 // Encerra o case.
 
         case 5:                    // Caso o usuário insira 5
-            // Não há nenhuma ação definida para o case 5.
+            funcionalidade5();     // Chama a função `funcionalidade5()`
             break;                 // Encerra o case.
 
         case 6:                    // Caso o usuário insira 6

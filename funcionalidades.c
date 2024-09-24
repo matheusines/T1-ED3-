@@ -343,137 +343,75 @@ void inserirRegistro(FILE *df, Registro *r, Cabecalho *header) {
 
 // Função principal para a funcionalidade 5 (inserção de registros)
 void funcionalidade5() {
-    Cabecalho header = inicializarCabecalho(); // Inicializa o cabeçalho do arquivo binário.
-    char fileName[30]; // Declara uma string para armazenar o nome do arquivo binário.
-    float floatValues; // Declara uma variável para armazenar valores de ponto flutuante (não utilizado).
-    int intValues; // Declara uma variável para armazenar valores inteiros (não utilizado).
-
-    // Lê o nome do arquivo binário fornecido pelo usuário.
+    Cabecalho header = inicializarCabecalho();
+    char fileName[30];
     scanf("%s", fileName);
 
-    FILE *df = fopen(fileName, "rb+"); // Abre o arquivo binário no modo de leitura e escrita.
-    if (df == NULL) { // Verifica se o arquivo foi aberto com sucesso.
-        printf("Falha no processamento do arquivo."); // Exibe mensagem de erro se o arquivo não puder ser aberto.
-        return; // Encerra a função se o arquivo não foi aberto corretamente.
+    FILE *df = fopen(fileName, "rb+");
+    if (df == NULL) {
+        printf("Falha no processamento do arquivo.");
+        return;
     }
 
-    // Lê o cabeçalho do arquivo binário.
     lerCabecalhoBin(df, &header);
 
-    // Define o status como '0' (inconsistente) enquanto o arquivo está sendo modificado.
-    header.status = '0';
+    int numInsertions;
+    scanf("%d", &numInsertions);
 
-    int numInsertions; // Variável para armazenar o número de registros a serem inseridos.
-    scanf("%d", &numInsertions);  // Lê o número de registros a serem inseridos.
+    Registro *r;
 
-    // Loop para inserir 'numInsertions' registros.
     for (int i = 0; i < numInsertions; i++) {
-        Registro *r = criarRegistro();  // Cria um novo registro com valores padrão.
-        char fieldValue[50];  // Buffer para valores numéricos e strings.
+        r = (Registro *)malloc(sizeof(Registro));
+        r->removido = '0'; // Define como não removido
+        r->encadeamento = -1; // Define o encadeamento como -1, pois o registro não está removido
 
-        // Leitura e tratamento do campo 'nome'.
-        scan_quote_string(fieldValue);
-        if (strcmp(fieldValue, "NULO") == 0) {
-            strcpy(r->nome, "#");  // Substitui "NULO" por '#'.
-        } else {
-            strcpy(r->nome, fieldValue);  // Copia a string lida para o campo 'nome'.
-        }
+        // Leitura dos campos do registro
+        scanf("%d", &r->populacao); // Leitura da população da espécie
 
-        // Leitura e tratamento do campo 'dieta'.
-        scan_quote_string(fieldValue);
-        if (strcmp(fieldValue, "NULO") == 0) {
-            strcpy(r->dieta, "#");  // Substitui "NULO" por '#'.
-        } else {
-            strcpy(r->dieta, fieldValue);  // Copia a string lida para o campo 'dieta'.
-        }
+        scanf("%f %c", &r->tamanho, &r->unidadeMedida); // Leitura do tamanho e da unidade de medida
 
-        // Leitura e tratamento do campo 'habitat'.
-        scan_quote_string(fieldValue);
-        if (strcmp(fieldValue, "NULO") == 0) {
-            strcpy(r->habitat, "#");  // Substitui "NULO" por '#'.
-        } else {
-            strcpy(r->habitat, fieldValue);  // Copia a string lida para o campo 'habitat'.
-        }
+        scanf("%d", &r->velocidade); // Leitura da velocidade do indivíduo
 
-        // Leitura e tratamento do campo 'população'.
-        scanf("%s", fieldValue);
-        if (strcmp(fieldValue, "NULO") == 0) {
-            r->populacao = -1;  // Define como -1 para indicar valor nulo.
-        } else {
-            r->populacao = atoi(fieldValue);  // Converte a string para inteiro e atribui ao campo 'população'.
-        }
+        r->nome = (char *)malloc(50 * sizeof(char));
+        scan_quote_string(r->nome); // Leitura do nome da espécie
 
-        // Leitura e tratamento do campo 'tipo'.
-        scan_quote_string(fieldValue);
-        if (strcmp(fieldValue, "NULO") == 0) {
-            strcpy(r->tipo, "#");  // Substitui "NULO" por '#'.
-        } else {
-            strcpy(r->tipo, fieldValue);  // Copia a string lida para o campo 'tipo'.
-        }
+        r->especie = (char *)malloc(50 * sizeof(char));
+        scan_quote_string(r->especie); // Leitura do nome científico da espécie
 
-        // Leitura e tratamento do campo 'velocidade'.
-        scanf("%s", fieldValue);
-        if (strcmp(fieldValue, "NULO") == 0) {
-            r->velocidade = -1;  // Define como -1 para indicar valor nulo.
-        } else {
-            r->velocidade = atoi(fieldValue);  // Converte a string para inteiro e atribui ao campo 'velocidade'.
-        }
+        r->habitat = (char *)malloc(50 * sizeof(char));
+        scan_quote_string(r->habitat); // Leitura do habitat da espécie
 
-        // Leitura do campo 'unidadeMedida'.
-        scanf("%s", fieldValue);
-        if (strcmp(fieldValue, "NULO") == 0) {
-            r->unidadeMedida = '$';  // Atribui '$' para valores nulos.
-        } else {
-            r->unidadeMedida = fieldValue[0];  // Atribui o primeiro caractere da string ao campo 'unidadeMedida'.
-        }
+        r->tipo = (char *)malloc(50 * sizeof(char));
+        scan_quote_string(r->tipo); // Leitura do tipo da espécie
 
-        // Leitura e tratamento do campo 'tamanho'.
-        scanf("%s", fieldValue);
-        if (strcmp(fieldValue, "NULO") == 0) {
-            r->tamanho = -1;  // Define como -1 para indicar valor nulo.
-        } else {
-            r->tamanho = atof(fieldValue);  // Converte a string para float e atribui ao campo 'tamanho'.
-        }
+        r->dieta = (char *)malloc(50 * sizeof(char));
+        scan_quote_string(r->dieta); // Leitura da dieta da espécie
 
-        // Leitura e tratamento do campo 'especie'.
-        scan_quote_string(fieldValue);
-        if (strcmp(fieldValue, "NULO") == 0) {
-            strcpy(r->especie, "#");  // Substitui "NULO" por '#'.
-        } else {
-            strcpy(r->especie, fieldValue);  // Copia a string lida para o campo 'especie'.
-        }
+        r->alimento = (char *)malloc(50 * sizeof(char));
+        scan_quote_string(r->alimento); // Leitura do alimento da espécie
 
-        // Leitura e tratamento do campo 'alimento'.
-        scan_quote_string(fieldValue);
-        if (strcmp(fieldValue, "NULO") == 0) {
-            strcpy(r->alimento, "#");  // Substitui "NULO" por '#'.
-        } else {
-            strcpy(r->alimento, fieldValue);  // Copia a string lida para o campo 'alimento'.
-        }
+        // Inserção do registro no arquivo binário
+            inserirRegistro(df, r, &header);
 
-        // Insere o registro, reutilizando o espaço de registros removidos ou no final do arquivo.
-        inserirRegistro(df, r, &header);
-        liberarRegistro(r);  // Libera a memória do registro após a inserção.
+
+        // Libera a memória alocada para os campos de string
+        free(r->nome);
+        free(r->especie);
+        free(r->habitat);
+        free(r->tipo);
+        free(r->dieta);
+        free(r->alimento);
+        free(r);
     }
 
-    // Calcula o tamanho do arquivo e ajusta o número de páginas de disco ocupadas.
-    int tamanhoArquivo = ftell(df);
-    if (tamanhoArquivo % PAGE_SIZE == 0) {
-        header.nroPagDisco = tamanhoArquivo / PAGE_SIZE;
-    } else {
-        header.nroPagDisco = (tamanhoArquivo / PAGE_SIZE) + 1;
-    }
-
-    header.status = '1';  // Marca o arquivo como consistente.
-
-    // Reescreve o cabeçalho atualizado no início do arquivo.
+    // Atualiza o cabeçalho do arquivo
     fseek(df, 0, SEEK_SET);
+    header.status = '1'; // Marca o arquivo como consistente
     escreverCabecalhoBin(df, &header);
 
-    fclose(df);  // Fecha o arquivo binário.
-    binarioNaTela(fileName);  // Exibe o arquivo binário na tela para verificação.
+    fclose(df);
+    binarioNaTela(fileName);
 }
-
 
 void funcionalidade6() {
     Cabecalho header = inicializarCabecalho(); // Inicializa o cabeçalho do arquivo binário.
