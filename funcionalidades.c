@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <string.h>
+#include <math.h>
 #include "funcoesFornecidas.h"
 #include "cabecalho.h"
 #include "registro.h"
@@ -291,82 +292,266 @@ void funcionalidade4() {
 
 
 
+// Função para inserir um registro reutilizando registros logicamente removidos ou ao final do arquivo
+void inserirRegistro(FILE *df, Registro *r, Cabecalho *header) {
+    if (header->topo != -1) {
+        // Reutiliza registros logicamente removidos
+        int RRNRemovido = header->topo;  // RRN do topo da pilha de removidos
+        long int byteOffset = PAGE_SIZE + (RRNRemovido * 160);  // Calcula o byte offset correto
+
+        // Posiciona o ponteiro no arquivo para o registro removido
+        fseek(df, byteOffset, SEEK_SET);
+
+        // Lê o registro removido
+        char removido;
+        int encadeamento;
+        fread(&removido, sizeof(char), 1, df);
+        fread(&encadeamento, sizeof(int), 1, df);
+
+        // Atualiza o topo da pilha para o próximo registro removido
+        header->topo = encadeamento;  // Atualiza para o próximo removido na lista
+
+        // Reposiciona o ponteiro para o início do registro para reescrever o novo
+        fseek(df, byteOffset, SEEK_SET);
+
+        // Marca o registro como válido
+        r->removido = '0';  // Agora é um registro válido
+        r->encadeamento = -1;  // Não há encadeamento para um registro válido
+
+        // Escreve o novo registro no lugar do registro removido
+        escreverRegistro(df, r);
+
+        // Atualiza o número de registros removidos
+        header->nroRegRem--;
+        // O proxRRN NÃO deve ser atualizado aqui
+    } else {
+        // Caso não haja registros removidos, insere ao final do arquivo
+        long int byteOffset = PAGE_SIZE + header->proxRRN * 160;  // Próximo byte offset
+        fseek(df, byteOffset, SEEK_SET);
+
+        // Marca o registro como válido
+        r->removido = '0';
+        r->encadeamento = -1;
+
+        // Escreve o novo registro no final do arquivo
+        escreverRegistro(df, r);
+
+        // Atualiza o proxRRN para o próximo registro a ser inserido ao final do arquivo
+        header->proxRRN++;
+    }
+}
+
+
+
+// Função principal para a funcionalidade 5 (inserção de registros)
+void funcionalidade5() {
+    Cabecalho header = inicializarCabecalho();
+    char fileName[30];
+    float floatValues;
+    int intValues;
+
+    // Lê o nome do arquivo binário
+    scanf("%s", fileName);
+
+    FILE *df = fopen(fileName, "rb+"); // Abre o arquivo para leitura e escrita
+    if (df == NULL) {
+        printf("Falha no processamento do arquivo.");
+        return;
+    }
+
+    // Lê o cabeçalho do arquivo binário
+    lerCabecalhoBin(df, &header);
+
+    // Define o status como inconsistente
+    header.status = '0';
+
+    int numInsertions;
+    scanf("%d", &numInsertions);  // Número de registros a serem inseridos
+
+    for (int i = 0; i < numInsertions; i++) {
+        Registro *r = criarRegistro();  // Cria um novo registro com valores padrão
+        char fieldValue[50];  // Buffer para valores numéricos e strings
+
+        // Leitura e tratamento do campo 'nome'
+        scan_quote_string(fieldValue);
+        if (strcmp(fieldValue, "NULO") == 0) {
+            strcpy(r->nome, "#");  // Trata "NULO" com '#'
+        } else {
+            strcpy(r->nome, fieldValue);  // Copia a string lida
+        }
+        
+
+        // Leitura e tratamento do campo 'dieta'
+        scan_quote_string(fieldValue);
+        if (strcmp(fieldValue, "NULO") == 0) {
+            strcpy(r->dieta, "#");  // Trata "NULO" com '#'
+        } else {
+            strcpy(r->dieta, fieldValue);  // Copia a string lida
+        }
+
+        // Leitura e tratamento do campo 'habitat'
+        scan_quote_string(fieldValue);
+        if (strcmp(fieldValue, "NULO") == 0) {
+            strcpy(r->habitat, "#");  // Trata "NULO" com '#'
+        } else {
+            strcpy(r->habitat, fieldValue);  // Copia a string lida
+        }
+
+        // Leitura e tratamento do campo 'população'
+        scanf("%s", fieldValue);
+        if (fieldValue == "NULO"){
+            r->populacao = -1;
+        }else{
+            r->populacao = atoi(fieldValue);
+        }
+        // Leitura e tratamento do campo 'tipo'
+        scan_quote_string(fieldValue);
+        if (strcmp(fieldValue, "NULO") == 0) {
+            strcpy(r->tipo, "#");  // Trata "NULO" com '#'
+        } else {
+            strcpy(r->tipo, fieldValue);  // Copia a string lida
+        }
+
+        // Leitura e tratamento do campo 'velocidade'
+        scanf("%s", fieldValue);
+        if (fieldValue == "NULO"){
+            r->velocidade = -1;
+        }else{
+            r->velocidade = atoi(fieldValue);
+        }
+        
+
+        // Leitura do campo 'unidadeMedida'
+        scanf("%s", fieldValue);
+        if (strcmp(fieldValue, "NULO") == 0) {
+            r->unidadeMedida = '$';  // Atribui '$' para valores nulos
+        } else {
+            r->unidadeMedida = fieldValue[1];  // Atribui o primeiro caractere da string
+        }
+    
+
+        // Leitura e tratamento do campo 'tamanho'
+        scanf("%s", fieldValue);
+        if (fieldValue == "NULO"){
+            r->tamanho = -1;
+        }else{
+            r->tamanho = atoi(fieldValue);
+        }
+        // Leitura e tratamento do campo 'especie'
+        scan_quote_string(fieldValue);
+        if (strcmp(fieldValue, "NULO") == 0) {
+            strcpy(r->especie, "#");  // Trata "NULO" com '#'
+        } else {
+            strcpy(r->especie, fieldValue);  // Copia a string lida
+        }
+
+        // Leitura e tratamento do campo 'alimento'
+        scan_quote_string(fieldValue);
+        if (strcmp(fieldValue, "NULO") == 0) {
+            strcpy(r->alimento, "#");  // Trata "NULO" com '#'
+        } else {
+            strcpy(r->alimento, fieldValue);  // Copia a string lida
+        }
+
+        // Insere o registro reutilizando o espaço dos registros removidos ou ao final
+        inserirRegistro(df, r, &header);
+        liberarRegistro(r);  // Libera o registro após a escrita
+    }
+
+
+    int tamanhoArquivo = ftell(df);
+    
+    if (tamanhoArquivo % PAGE_SIZE == 0) {
+        header.nroPagDisco = tamanhoArquivo / PAGE_SIZE;
+    } else {
+        header.nroPagDisco = (tamanhoArquivo / PAGE_SIZE) + 1;
+    }
+
+    header.status = '1';  // Marca o arquivo como consistente   
+
+    // Reescreve o cabeçalho
+    fseek(df, 0, SEEK_SET);
+    escreverCabecalhoBin(df, &header);
+
+    fclose(df);  // Fecha o arquivo
+    binarioNaTela(fileName);  // Exibe o arquivo binário na tela
+}
+
+
+
 
 void funcionalidade6() {
-    char nomeArquivoOriginal[30];
+    Cabecalho header = inicializarCabecalho();
+    char srcFileName[30];
 
-    // Ler o nome do arquivo original
-    scanf("%s", nomeArquivoOriginal);
-
-    // Nome fixo para o arquivo compactado
-    char *nomeArquivoCompactado = "compactado.bin";
-
-    FILE *arquivoOriginal = fopen(nomeArquivoOriginal, "rb");
-    if (arquivoOriginal == NULL) {
+    // Lê o nome do arquivo binário de entrada (arquivo original)
+    scanf("%s", srcFileName);
+    FILE *sf = fopen(srcFileName, "rb"); // Abre o arquivo original para leitura
+    if (sf == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
 
-    FILE *arquivoCompactado = fopen(nomeArquivoCompactado, "wb");
-    if (arquivoCompactado == NULL) {
+    // Nome do arquivo compactado
+    char *compactFileName = "compactado.bin";
+    FILE *compactFile = fopen(compactFileName, "wb"); // Cria o arquivo compactado
+    if (compactFile == NULL) {
         printf("Falha ao criar o arquivo compactado.\n");
-        fclose(arquivoOriginal);
+        fclose(sf);
         return;
     }
 
-    // Ler o cabeçalho do arquivo original
-    Cabecalho headerOriginal;
-    lerCabecalhoBin(arquivoOriginal, &headerOriginal);
+    // Lê o cabeçalho do arquivo original
+    lerCabecalhoBin(sf, &header);
 
-    // Atualizar o status do arquivo compactado para inconsistente
-    Cabecalho headerCompactado = headerOriginal;
-    headerCompactado.status = '0';
-    escreverCabecalhoBin(arquivoCompactado, &headerCompactado);
+    // Atualiza o status do arquivo compactado para inconsistente enquanto é escrito
+    header.status = '0';
+    escreverCabecalhoBin(compactFile, &header);
 
-    // Posicionar no primeiro registro do arquivo original
-    fseek(arquivoOriginal, PAGE_SIZE, SEEK_SET);
+    // Posiciona o ponteiro no primeiro registro do arquivo original, após o cabeçalho
+    fseek(sf, PAGE_SIZE, SEEK_SET);
     Registro *r;
+    long int byteOffset;
     int RRN = 0;
 
-    // Iterar sobre os registros do arquivo original
+    // Itera sobre os registros do arquivo original
     while (1) {
-        long byteOffset = PAGE_SIZE + RRN * 160;
-        fseek(arquivoOriginal, byteOffset, SEEK_SET);
-        r = lerRegistroBin(arquivoOriginal);
+        byteOffset = ftell(sf); // Captura o byteOffset atual (posição do ponteiro)
+        r = lerRegistroBin(sf); // Lê o próximo registro
 
         if (r == NULL) {
-            break;  // Sai do loop se não houver mais registros
+            break;  // Sai do loop quando não há mais registros
         }
 
-        if (r->removido == '0') {
-            // Escrever registro não removido no arquivo compactado
-            escreverRegistro(arquivoCompactado, r);
+        if (r->removido == '0') {  // Apenas registra os que NÃO estão removidos
+            // Reescreve o registro não removido no arquivo compactado
+            fseek(compactFile, 0, SEEK_END);  // Coloca o ponteiro no final do arquivo compactado
+            escreverRegistro(compactFile, r); // Escreve o registro no arquivo compactado
         }
 
-        RRN++;
-        liberarRegistro(r);
+        RRN++;  // Incrementa o RRN
+        liberarRegistro(r);  // Libera o registro atual
     }
 
-    // Atualizar o status do arquivo compactado para consistente
-    headerCompactado.status = '1';
+    // Atualiza o status do arquivo compactado para consistente
+    header.status = '1';
+    header.topo = -1;  // O arquivo compactado não possui registros removidos
+    header.nroRegRem = 0;
+    header.qttCompacta++;
+    header.proxRRN = RRN;
+    // Atualiza o número de páginas de disco
+    fseek(compactFile, 0, SEEK_END); // Vai para o final do arquivo compactado
+    long tamanhoArquivo = ftell(compactFile);  // Tamanho do arquivo compactado
+    header.nroPagDisco = (tamanhoArquivo + PAGE_SIZE - 1) / PAGE_SIZE;
 
-    // Atualizar outros campos do cabeçalho, se necessário
-    // Por exemplo, atualizar o topo da lista de removidos
-    headerCompactado.topo = -1;  // Já que o arquivo compactado não tem registros removidos
+    // Reescreve o cabeçalho atualizado no arquivo compactado
+    fseek(compactFile, 0, SEEK_SET);
+    escreverCabecalhoBin(compactFile, &header);
 
-    // Calcular o número de páginas de disco no arquivo compactado
-    fseek(arquivoCompactado, 0, SEEK_END);
-    long tamanhoArquivo = ftell(arquivoCompactado);
-    headerCompactado.nroPagDisco = (tamanhoArquivo + PAGE_SIZE - 1) / PAGE_SIZE;
+    // Fecha os arquivos
+    fclose(sf);
+    fclose(compactFile);
 
-    // Escrever o cabeçalho atualizado no arquivo compactado
-    fseek(arquivoCompactado, 0, SEEK_SET);
-    escreverCabecalhoBin(arquivoCompactado, &headerCompactado);
-
-    // Fechar arquivos
-    fclose(arquivoOriginal);
-    fclose(arquivoCompactado);
-
-    // Exibir o arquivo compactado
-    binarioNaTela(nomeArquivoCompactado);
+    // Exibe o conteúdo do arquivo compactado na tela
+    binarioNaTela(compactFileName);
 }
