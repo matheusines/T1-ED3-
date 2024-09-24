@@ -36,10 +36,19 @@ Este projeto implementa diversas funcionalidades para manipulação de arquivos 
 ## Estrutura do Projeto
 
 - `main.c`: Contém a função principal que gerencia a execução do programa e chama as funcionalidades conforme a entrada do usuário.
-- `funcionalidades.c`: Implementa todas as funcionalidades descritas acima.
-- `funcionalidades.h`: Declaração das funções utilizadas nas funcionalidades.
-- `utils.c`: Funções auxiliares para leitura, escrita e manipulação de registros e cabeçalho.
-- `utils.h`: Declaração das funções auxiliares.
+- `funcionalidades.c`: Implementa todas as funcionalidades descritas, incluindo leitura, escrita, inserção, remoção e compactação de registros.
+- `funcionalidades.h`: Declaração das funções utilizadas nas funcionalidades principais do programa.
+- `funcoesFornecidas.c`: Implementa funções fornecidas pelo projeto, que podem incluir operações de entrada e saída específicas, como leitura e escrita de registros na tela.
+- `funcoesFornecidas.h`: Declaração das funções fornecidas, utilizadas para manipulações adicionais dos dados ou interface com o usuário.
+- `utils.c`: Contém funções auxiliares para leitura, escrita e manipulação de registros e do cabeçalho do arquivo binário.
+- `utils.h`: Declaração das funções auxiliares utilizadas em `utils.c`.
+- `cabecalho.c`: Implementa funções específicas para manipulação do cabeçalho dos arquivos binários, incluindo leitura e escrita do cabeçalho.
+- `cabecalho.h`: Declaração das funções relacionadas à manipulação do cabeçalho do arquivo binário.
+- `registro.c`: Implementa funções para manipulação dos registros, como criação, leitura, escrita e liberação de memória.
+- `registro.h`: Declaração das funções utilizadas para manipulação dos registros individuais do arquivo binário.
+- `funcoesUteis.c`: Contém funções de suporte e utilitárias que são usadas em diversas partes do programa, auxiliando nas operações gerais.
+- `funcoesUteis.h`: Declaração das funções utilitárias definidas em `funcoesUteis.c`.
+
 
 ## Como Executar
 
@@ -78,5 +87,3 @@ Este projeto implementa diversas funcionalidades para manipulação de arquivos 
 Este projeto é distribuído sob a licença [Escolha sua licença].
 
 ---
-
-Esse README oferece uma visão geral do projeto, descrevendo suas funcionalidades, estrutura, e instruções de uso. Sinta-se à vontade para ajustar as seções conforme necessário para melhor refletir as especificidades do seu trabalho!
