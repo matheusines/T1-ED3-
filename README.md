@@ -82,6 +82,12 @@ Este projeto implementa diversas funcionalidades para manipulação de arquivos 
 - Matheus Ines 
 - Bruno Tomé Rosa
 
+Aqui está uma seção de Links Úteis que você pode adicionar ao seu README:
+
+## Links Úteis
+
+- [Apresentação do Trabalho](https://docs.google.com/presentation/d/1XyUVv3M26B43VlJZXYALKOFSn1I3_NTLpv6hP0_3Tn8/edit?usp=sharing) - Apresentação utilizada no vídeo 
+
 ## Licença
 
 Este projeto é distribuído sob a licença [Escolha sua licença].
