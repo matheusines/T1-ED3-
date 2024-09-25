@@ -54,12 +54,12 @@ Este projeto implementa diversas funcionalidades para manipulação de arquivos 
 
 1. Compile o programa usando o GCC ou qualquer outro compilador C:
    ```bash
-    make
+    make all
    ```
    
 2. Execute o programa:
    ```bash
-   ./programaTrab
+   make run
    ```
 
 3. Siga as instruções na tela para escolher a funcionalidade desejada e fornecer as entradas necessárias.
