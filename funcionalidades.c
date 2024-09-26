@@ -176,6 +176,7 @@ void funcionalidade3() {
                 if (r->tamanho != -1) printf("Tamanho: %.1f m\n", r->tamanho);
                 if (r->velocidade != -1) printf("Velocidade: %d %cm/h\n", r->velocidade, r->unidadeMedida);
                 printf("\n");
+                registrosEncontrados++; // Incrementa o numero de registros encontrados
             }
             liberarRegistro(r);  // Libera o espaço de memória do registro atual
             r = lerRegistroBin(arquivoBin);  // Lê o próximo registro do arquivo
@@ -187,9 +188,9 @@ void funcionalidade3() {
         }
 
         // Exibe o número de páginas de disco ocupadas pelo arquivo
-        printf("Numero de paginas de disco: %d\n\n", header.nroPagDisco);
+        printf("Numero de paginas de disco: %d\n", header.nroPagDisco);
     }
-
+    printf("\n");
     fclose(arquivoBin);  // Fecha o arquivo binário
 }
 
@@ -362,7 +363,7 @@ void funcionalidade5() {
         if (strcmp(valorCampo, "NULO") == 0) {
             r->unidadeMedida = '$';  // Atribui '$' para valores nulos
         } else {
-            r->unidadeMedida = valorCampo[0];  // Atribui o primeiro caractere da string
+            r->unidadeMedida = valorCampo[1];  // Atribui o seungdo caractere da string
         }
 
 
