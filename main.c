@@ -1,41 +1,54 @@
-#include <stdio.h>         // Inclui a biblioteca padrão de entrada e saída para usar funções como printf() e scanf().
-#include <stdlib.h>        // Inclui a biblioteca padrão para uso de funções como malloc(), free(), etc.
+#include <stdio.h>         
+#include <stdlib.h>        
 #include "funcionalidades.h" // Inclui o arquivo de cabeçalho "funcionalidades.h" onde as funções `funcionalidade1()`, `funcionalidade2()`, etc., estão declaradas.
 
-// As funcionalidades 1, 3, 5 foram feitas pelo Bruno Tomé Rosa 
-// As funcionalidades 2, 4, 6 foram feitas pelo Matheus Ines 
+/* 
+
+___________________________________________________
+|                                                  |
+|. Bruno Tomé Rosa (Nº USP: 10276654)              |
+|    -> Atribuições: funcionalidades 2, 4, 6       |
+|    -> Conclusão: 100%                            |
+|                                                  |
+|. Matheus dos Santos Inês (Nº USP: 12546784)      |
+|    -> Atribuições: funcionalidades 1, 3, 5       |
+|    -> Conclusão: 100%                            |
+|                                                  |
+|__________________________________________________|
+
+*/
 
 int main() {
-    int opt;              // Declara a variável 'opt' para armazenar a opção do usuário.
-    scanf("%d", &opt);    // Lê a entrada do usuário e armazena o valor na variável 'opt'.
+    int funcionalidade;              // Declara a variável 'funcionalidade' para armazenar a opção do usuário.
+    scanf("%d", &funcionalidade);    // Lê a entrada do usuário e armazena o valor na variável 'funcionalidade'.
 
     // Estrutura switch para executar a função correspondente com base na entrada do usuário.
-    switch (opt) {
+    switch (funcionalidade) {
         case 1:                    // Caso o usuário insira 1
             funcionalidade1();     // Chama a função `funcionalidade1()`
-            break;                 // Encerra o case para evitar a execução de outros casos.
+            break;                 
 
         case 2:                    // Caso o usuário insira 2
             funcionalidade2();     // Chama a função `funcionalidade2()`
-            break;                 // Encerra o case.
+            break;                 
 
         case 3:                    // Caso o usuário insira 3
             funcionalidade3();     // Chama a função `funcionalidade3()`
-            break;                 // Encerra o case.
+            break;                 
             
         case 4:                    // Caso o usuário insira 4
             funcionalidade4();     // Chama a função `funcionalidade4()`
-            break;                 // Encerra o case.
+            break;                 
 
         case 5:                    // Caso o usuário insira 5
             funcionalidade5();     // Chama a função `funcionalidade5()`
-            break;                 // Encerra o case.
+            break;                 
 
         case 6:                    // Caso o usuário insira 6
             funcionalidade6();     // Chama a função `funcionalidade6()`
-            break;                 // Encerra o case.
+            break;                 
 
-        default:                   // Caso o usuário insira qualquer outro valor que não seja 1-6
+        default:                   // Caso o usuário insira qualquer outro valor que não esteja entre 1 e 6
             break;                 // Nenhuma ação é realizada.
     }
 }
